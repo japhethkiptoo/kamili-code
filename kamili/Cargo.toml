@@ -1,0 +1,33 @@
+[workspace]
+resolver = "3"
+members = ["kamili", "channels/kamili-cli", "channels/kamili-acp", "channels/kamili-desktop"]
+# The desktop channel pulls in GPUI, which is large; plain `cargo build` and
+# `cargo test` skip it. Use `-p kamili-desktop` or `--workspace` to include it.
+default-members = ["kamili", "channels/kamili-cli", "channels/kamili-acp"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+publish = false
+
+[workspace.dependencies]
+# Internal crates. Channels opt into engine features explicitly.
+kamili = { path = "kamili", default-features = false }
+kamili-acp = { path = "channels/kamili-acp" }
+kamili-desktop = { path = "channels/kamili-desktop" }
+
+# Shared external versions.
+async-trait = "0.1"
+clap = { version = "4", features = ["derive"] }
+globset = "0.4"
+ignore = "0.4"
+regex = "1"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+similar = "2"
+tempfile = "3"
+thiserror = "2"
+tokio = { version = "1", features = ["fs", "io-std", "io-util", "macros", "process", "rt-multi-thread", "signal", "sync", "time"] }
+toml = "0.8"

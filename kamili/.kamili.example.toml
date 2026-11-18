@@ -1,0 +1,59 @@
+# Copy to .kamili.toml in your project root. Every key is optional except
+# build.test_command, which builds need.
+
+specs_dir = "docs/features"
+
+[provider]
+kind = "anthropic"         # "anthropic" (Claude; `kamili login`) | "openai" (any OpenAI-compatible API)
+# For NVIDIA NIM, OpenRouter, Ollama, …: set kind = "openai", the API root and
+# the env var holding the key (empty for local servers), and set [models] to
+# that provider's model IDs.
+# base_url = "https://integrate.api.nvidia.com/v1"
+# api_key_env = "NVIDIA_API_KEY"
+
+[models]
+analyst = "claude-opus-5-5"
+architect = "claude-opus-5-5"
+planner = "claude-opus-5-5"
+worker = "claude-sonnet-5-5"
+tester = "claude-sonnet-5-5"
+documentor = "claude-haiku-5-5"
+effort = "high"            # low | medium | high | xhigh | max; "" = model default
+
+[build]
+test_command = ["cargo", "test"]
+max_retries = 3            # extra Worker attempts after the first failure
+approve_spec_edits = true  # ask before accepting the Planner's spec edits
+approve_write_back = true  # ask before writing to the real tree
+
+[sandbox]
+backend = "process"        # "process" = NO isolation (dev only); "container" is not implemented yet
+timeout_secs = 600
+
+[session]
+max_rounds = 20            # Analyst turns before a draft is forced
+architect = true           # Architect writes `## Architecture` after the Analyst's draft
+
+[context]
+# What agents may see, on top of .gitignore and .kamiliignore (globs).
+include = []               # empty = everything not ignored
+exclude = []               # e.g. ["**/*.min.js", "fixtures/**"]
+repo_map_bytes = 12000     # size of the repo overview each agent starts with
+max_tool_calls = 60        # tool calls per agent turn
+max_read_bytes = 600000    # tool output per agent turn
+
+[skills]
+# Where installed skills are found, in order. `npx skills add` installs to .agents/skills.
+dirs = [".agents/skills", "~/.agents/skills"]
+max_bytes = 60000          # cap on skill text added to one agent's prompt
+
+[skills.required]
+# Skills each agent must load: "name" or "owner/repo@name" (from skills.sh).
+# Runs fail (exit 2) if one is missing; `kamili skills install` fetches them.
+all = []
+analyst = []
+architect = []             # e.g. ["vercel-labs/agent-skills@web-design-guidelines"]
+planner = []
+worker = []
+tester = []
+documentor = []

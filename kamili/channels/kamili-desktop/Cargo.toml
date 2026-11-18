@@ -1,0 +1,29 @@
+[package]
+name = "kamili-desktop"
+description = "Desktop channel for Kamili: a native window built with gpui-kit."
+version.workspace = true
+edition.workspace = true
+# GPUI uses library APIs newer than the workspace minimum (1.89 fails on
+# `slice::as_array`). 1.99 is the version this crate is tested with.
+rust-version = "1.99"
+publish.workspace = true
+
+[features]
+default = ["ui"]
+# The window itself. Without it only the engine bridge and UI state compile,
+# which keeps their tests fast (`--no-default-features`).
+ui = ["dep:gpui-kit"]
+
+[dependencies]
+# Engine features are chosen by the composition root (kamili-cli).
+kamili.workspace = true
+async-trait.workspace = true
+similar.workspace = true
+tokio.workspace = true
+gpui-kit = { version = "0.9", optional = true }
+
+[dev-dependencies]
+tempfile.workspace = true
+tokio.workspace = true
+# Headless windows for the UI tests (`#[gpui_kit::test]`).
+gpui-kit = { version = "0.9", features = ["test-support"] }
